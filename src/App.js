@@ -66,11 +66,22 @@ export const API_KEY = `http://www.omdbapi.com/?apikey=81e430ab`;
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState("");
   const [selectedID, setSelectedID] = useState(null);
+
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    return JSON.parse(localStorage.getItem("watchedMovies"));
+  });
+
+  useEffect(
+    function () {
+      localStorage.setItem("watchedMovies", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(() => {
     const controller = new AbortController();

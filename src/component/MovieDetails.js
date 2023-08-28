@@ -59,8 +59,13 @@ export default function MovieDetails({
     };
     // console.log(selectedMovie)
     setWatched((watchedMovie) => [...watchedMovie, newWatchedMovie]);
+    // localStorage.setItem(
+    //   "watchedMovies",
+    //   JSON.stringify([...watched, newWatchedMovie])
+    // );
     setSelectedID(null);
   }
+
   useEffect(() => {
     setIsLoading(true);
     async function fetchMovie() {
@@ -98,6 +103,7 @@ export default function MovieDetails({
       document.removeEventListener("keydown", keyDownCallback);
     };
   }, [setSelectedID]);
+
   return (
     <div className="details">
       {isLoading ? (

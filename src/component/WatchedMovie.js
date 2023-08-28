@@ -1,7 +1,11 @@
 export default function WatchedMovie({ movie, setWatched }) {
   function handleDeleteWatchedMovie(movieID) {
     setWatched((watched) =>
-      watched.filter((movie) => movie.imdbID !== movieID)
+      watched.filter((movie , i ) => {
+        // console.log("movie.imdbID => " + i, movie.imdbID);
+        // console.log("movieID => " + i, movieID);
+        return movie.imdbID !== movieID;
+      })
     );
   }
   // console.log(movie)
@@ -20,7 +24,7 @@ export default function WatchedMovie({ movie, setWatched }) {
         </p>
         <p>
           <span>⏳</span>
-          <span>{movie.runtime} Min</span> 
+          <span>{movie.runtime} Min</span>
         </p>
         <button
           className="btn-delete"
