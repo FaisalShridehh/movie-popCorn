@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import NavBar from "./component/NavBar";
 import Main from "./component/Main";
 import NumResults from "./component/NumResults";
@@ -10,6 +10,8 @@ import WatchedSummary from "./component/WatchedSummary";
 import MovieDetails from "./component/MovieDetails";
 import ErrorHandling from "./component/ErrorHandling";
 import Loader from "./component/Loader";
+import { useMovies } from "./customHooks/useMovies";
+import { useLocalStorage } from "./customHooks/useLocalStorage";
 // import WatchedMovie from "./component/WatchedMovie";
 
 export const tempMovieData = [
@@ -65,53 +67,18 @@ export const average = (arr) =>
 export const API_KEY = `http://www.omdbapi.com/?apikey=81e430ab`;
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState("");
   const [selectedID, setSelectedID] = useState(null);
 
-  // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    return JSON.parse(localStorage.getItem("watchedMovies"));
-  });
-
-  useEffect(
-    function () {
-      localStorage.setItem("watchedMovies", JSON.stringify(watched));
-    },
-    [watched]
+  const { movies, isLoading, errorMessage } = useMovies(
+    query,
+    API_KEY,
+    useCallback(()=> setSelectedID(null),[])
   );
 
-  useEffect(() => {
-    const controller = new AbortController();
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useLocalStorage([] , "watchedMovies")
 
-    setIsLoading(true);
-    setErrorMessage("");
-    async function fetchMovies() {
-      try {
-        const res = await fetch(`${API_KEY}&s=${query}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error("Couldn't fetch movies from server");
-        const data = await res.json();
-        // console.log(data);
-        if (data.Response === "False")
-          throw new Error(`There is no movies available`);
-        setMovies(data.Search);
-        setErrorMessage("");
-      } catch (err) {
-        if (err.name !== "AbortError") setErrorMessage(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    setSelectedID(null);
-    fetchMovies();
-    return function () {
-      controller.abort();
-    };
-  }, [query]);
 
   return (
     <>

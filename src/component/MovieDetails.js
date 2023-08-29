@@ -3,6 +3,7 @@ import StarsRating from "./StarsRating";
 import Loader from "./Loader";
 
 import { API_KEY } from "../App";
+import { useKeyDown } from "../customHooks/useKeyDown";
 
 // function Loader() {
 //   return (
@@ -20,12 +21,12 @@ export default function MovieDetails({
   const [movieData, setMovieData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
-  
+
   const counterRef = useRef(0);
 
   useEffect(() => {
-    if(userRating) counterRef.current = counterRef.current + 1
-  },[userRating])
+    if (userRating) counterRef.current = counterRef.current + 1;
+  }, [userRating]);
 
   const isAlreadyWatched = watched
     ?.map((movie) => movie.imdbID)
@@ -38,7 +39,7 @@ export default function MovieDetails({
   const {
     Poster: poster,
     Title: title,
-    Year: year,
+    // Year: year,
     Released: released,
     Genre: genre,
     Runtime: runtime,
@@ -62,7 +63,7 @@ export default function MovieDetails({
       actors: selectedMovie.Actors,
       director: selectedMovie.Director,
       userRating,
-      userRatingDecisions: counterRef.current
+      userRatingDecisions: counterRef.current,
     };
     // console.log(selectedMovie)
     setWatched((watchedMovie) => [...watchedMovie, newWatchedMovie]);
@@ -72,6 +73,8 @@ export default function MovieDetails({
     // );
     setSelectedID(null);
   }
+
+  useKeyDown("Escape", () => setSelectedID(null));
 
   useEffect(() => {
     setIsLoading(true);
@@ -96,20 +99,6 @@ export default function MovieDetails({
       document.title = `usePopcorn`;
     };
   }, [title]);
-
-  useEffect(() => {
-    function keyDownCallback(e) {
-      if (e.code === "Escape") {
-        setSelectedID(null);
-        console.log("keyDownCallback");
-      }
-    }
-
-    document.addEventListener("keydown", keyDownCallback);
-    return function () {
-      document.removeEventListener("keydown", keyDownCallback);
-    };
-  }, [setSelectedID]);
 
   return (
     <div className="details">
